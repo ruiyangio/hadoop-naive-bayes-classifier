@@ -1,14 +1,12 @@
-plugins {
-  id 'naive-bayes-classifier'
+apply plugin: 'java'
+
+repositories {
+  mavenCentral()
 }
 
 dependencies {
   compile group: 'org.ansj', name: 'ansj_seg', version: '5.1.1'
   testCompile group: 'junit', name: 'junit', version: '4.+'
-}
-
-repositories {
-  jcenter()
 }
 
 version = '0.1.0'
