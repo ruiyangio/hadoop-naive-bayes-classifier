@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Util {
-    final static String IGNORE_PATTERN = " \t\n\r\f,.:;?![]|'\"";
+    final static String IGNORE_PATTERN = " \t\n\r\f,.:;?![]|";
 
     public static List<String> tokenize(String s) {
         List<String> res = new ArrayList<>();

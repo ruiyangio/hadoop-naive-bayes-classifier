@@ -15,6 +15,14 @@ dependencies {
 
 version = '0.1.0'
 
+test {
+    testLogging.showStandardStreams = true
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': project.name,
