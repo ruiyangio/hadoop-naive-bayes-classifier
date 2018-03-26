@@ -7,35 +7,25 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.io.IOException;
-import java.util.regex.Pattern;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.StringUtils;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonElement;
 
 import rui.classifier.bayes.Util;
 
 public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static final Logger LOG = Logger.getLogger(BayesMapper.class.getName());
-    private long numRecords = 0;
-    private String input;
+    private static final String LABEL_SEPRATOR = "###";
     private Set<String> patternsToSkip = new HashSet<String>();
+    private Text POSITIVE_COUNT = new Text("POSITIVE_COUNTS");
+    private Text NEGATIVE_COUNT = new Text("NEGATIVE_COUNTS");
 
-    protected void setup(Mapper.Context context) throws IOException, InterruptedException {
-        if (context.getInputSplit() instanceof FileSplit) {
-            this.input = ((FileSplit) context.getInputSplit()).getPath().toString();
-        } else {
-            this.input = context.getInputSplit().toString();
-        }
+    protected void setup(Context context) throws IOException, InterruptedException {
         Configuration config = context.getConfiguration();
         if (config.getBoolean("bayes.skip.patterns", false)) {
             URI[] localPaths = context.getCacheFiles();
@@ -52,42 +42,40 @@ public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
                 pattern = pattern.trim().toLowerCase();
                 patternsToSkip.add(pattern);
             }
+            fis.close();
         } catch (IOException ioe) {
             System.err.println("Caught exception while parsing the cached file '" + patternsURI + "' : " + StringUtils.stringifyException(ioe));
         }
     }
 
     public void map(LongWritable offset, Text lineText, Context context) throws IOException, InterruptedException {
-        String line = lineText.toString();
-        JsonParser jsonParser = new JsonParser();
-        JsonElement element = jsonParser.parse(line);
-        if (element.isJsonObject()){
-            JsonObject jsonObject = element.getAsJsonObject();
-            String sentence = jsonObject.get("s").getAsString();
-            String label = jsonObject.get("label").getAsString();
-            List<String> tokens = Util.tokenize(sentence);
+        String line = lineText.toString().trim();
+        line = line.replaceAll("\\r|\\n", "");
+        String[] parts = line.split(LABEL_SEPRATOR);
+        String sentence = parts[0].toLowerCase();
+        String label = parts[1];
 
-            for (String token : tokens) {
-                if (this.patternsToSkip.contains(token)) {
-                    continue;
-                }
-
-                JsonObject record = new JsonObject();
-                record.addProperty("token", token);
-                if (label.equals("Positive")) {
-                    record.addProperty("positive", 1);
-                    record.addProperty("negative", 0);
-
-                }
-                else {
-                    record.addProperty("positive", 0);
-                    record.addProperty("negative", 1);
-                }
-
-                Text tokenKey = new Text(token);
-                Text rcordText = new Text(record.toString());
-                context.write(tokenKey, rcordText);
+        List<String> tokens = Util.tokenize(sentence);
+        for (String token : tokens) {
+            if (this.patternsToSkip.contains(token)) {
+                continue;
             }
+
+            JsonObject record = new JsonObject();
+            record.addProperty("token", token);
+            if (label.equals("Positive")) {
+                record.addProperty("positive", 1);
+                record.addProperty("negative", 0);
+                context.write(POSITIVE_COUNT, new Text(record.toString()));
+            }
+            else {
+                record.addProperty("positive", 0);
+                record.addProperty("negative", 1);
+                context.write(NEGATIVE_COUNT, new Text(record.toString()));
+            }
+
+            Text tokenKey = new Text(token);
+            context.write(tokenKey, new Text(record.toString()));
         }
     }
 }

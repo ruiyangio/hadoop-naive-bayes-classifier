@@ -24,3 +24,9 @@ hs_err_pid*
 # Gradle
 .gradle
 build
+
+# vscode plugins
+.settings
+.classpath
+.project
+.vscode
