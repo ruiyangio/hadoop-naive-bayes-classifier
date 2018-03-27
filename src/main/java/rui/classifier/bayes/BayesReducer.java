@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 
-public class BayesReducer extends Reducer<Text, Text, Text, NullWritable> {
+public class BayesReducer extends Reducer<Text, Text, Text, Text> {
     @Override
     public void reduce(Text token, Iterable<Text> records, Context context) throws IOException, InterruptedException {
         long negativeSum = 0;
@@ -30,6 +30,6 @@ public class BayesReducer extends Reducer<Text, Text, Text, NullWritable> {
         sumRecord.addProperty("positive", positiveSum);
         sumRecord.addProperty("negative", negativeSum);
 
-        context.write(new Text(sumRecord.toString()), NullWritable.get());
+        context.write(new Text(sumRecord.toString()), new Text(""));
     }
 }
