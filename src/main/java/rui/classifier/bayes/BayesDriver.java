@@ -36,10 +36,6 @@ public class BayesDriver extends Configured implements Tool {
         job.setOutputValueClass(Text.class);
 
         int jobRes = job.waitForCompletion(true) ? 1 : 0;
-        long positiveCount = job.getCounters().findCounter(BayesCounter.PositiveCounter).getValue();
-        long negativeCount = job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue();
-        LOG.info("Positive words: " + positiveCount);
-        LOG.info("Negative words: " + negativeCount);
         return jobRes;
     }
 }

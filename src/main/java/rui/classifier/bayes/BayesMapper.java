@@ -56,6 +56,13 @@ public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
         String sentence = parts[0].toLowerCase();
         String label = parts[1];
 
+        if (label.equals("Positive")) {
+            context.getCounter(BayesCounter.PositiveDocument).increment(1);
+        }
+        else {
+            context.getCounter(BayesCounter.NegativeDocument).increment(1);
+        }
+
         List<String> tokens = Util.tokenize(sentence);
         for (String token : tokens) {
             if (this.patternsToSkip.contains(token)) {
