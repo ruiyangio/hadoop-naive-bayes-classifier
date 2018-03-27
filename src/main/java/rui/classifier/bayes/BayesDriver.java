@@ -9,6 +9,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.io.Text;
 
+import rui.classifier.bayes.BayesCounter;
+
 public class BayesDriver extends Configured implements Tool {
     private static final Logger LOG = Logger.getLogger(BayesDriver.class.getName());
 
@@ -33,6 +35,11 @@ public class BayesDriver extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        return job.waitForCompletion(true) ? 0 : 1;
+        int jobRes = job.waitForCompletion(true) ? 1 : 0;
+        long positiveCount = job.getCounters().findCounter(BayesCounter.PositiveCounter).getValue();
+        long negativeCount = job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue();
+        LOG.info("Positive words: " + positiveCount);
+        LOG.info("Negative words: " + negativeCount);
+        return jobRes;
     }
 }

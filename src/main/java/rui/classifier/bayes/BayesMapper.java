@@ -17,6 +17,7 @@ import org.apache.hadoop.util.StringUtils;
 import com.google.gson.JsonObject;
 
 import rui.classifier.bayes.Util;
+import rui.classifier.bayes.BayesCounter;
 
 public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static final Logger LOG = Logger.getLogger(BayesMapper.class.getName());
@@ -67,11 +68,13 @@ public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
                 record.addProperty("positive", 1);
                 record.addProperty("negative", 0);
                 context.write(POSITIVE_COUNT, new Text(record.toString()));
+                context.getCounter(BayesCounter.PositiveCounter).increment(1);
             }
             else {
                 record.addProperty("positive", 0);
                 record.addProperty("negative", 1);
                 context.write(NEGATIVE_COUNT, new Text(record.toString()));
+                context.getCounter(BayesCounter.NegativeCounter).increment(1);
             }
 
             Text tokenKey = new Text(token);
