@@ -3,7 +3,6 @@ package rui.classifier.bayes;
 import java.io.IOException;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.NullWritable;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
