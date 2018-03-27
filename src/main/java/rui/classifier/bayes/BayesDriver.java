@@ -31,6 +31,8 @@ public class BayesDriver extends Configured implements Tool {
         job.setMapperClass(BayesMapper.class);
         job.setCombinerClass(BayesReducer.class);
         job.setReducerClass(BayesReducer.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(NullWritable.class);
 
