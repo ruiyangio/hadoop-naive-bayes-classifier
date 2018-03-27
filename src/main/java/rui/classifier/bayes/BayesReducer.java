@@ -29,6 +29,6 @@ public class BayesReducer extends Reducer<Text, Text, Text, Text> {
         sumRecord.addProperty("positive", positiveSum);
         sumRecord.addProperty("negative", negativeSum);
 
-        context.write(new Text(sumRecord.toString()), new Text(""));
+        context.write(token, new Text(sumRecord.toString()));
     }
 }
