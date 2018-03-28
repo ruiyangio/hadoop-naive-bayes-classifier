@@ -9,8 +9,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.io.Text;
 
-import rui.classifier.bayes.BayesCounter;
-
 public class BayesDriver extends Configured implements Tool {
     private static final Logger LOG = Logger.getLogger(BayesDriver.class.getName());
 
@@ -35,7 +33,7 @@ public class BayesDriver extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        int jobRes = job.waitForCompletion(true) ? 1 : 0;
-        return jobRes;
+        int retCode = job.waitForCompletion(true) ? 1 : 0;
+        return retCode;
     }
 }

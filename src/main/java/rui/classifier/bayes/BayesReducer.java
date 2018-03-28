@@ -8,12 +8,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 
-import rui.classifier.bayes.BayesCounter;
-
 public class BayesReducer extends Reducer<Text, Text, Text, Text> {
     @Override
     public void reduce(Text token, Iterable<Text> records, Context context) throws IOException, InterruptedException {
-        context.getCounter(BayesCounter.UniqueTokens).increment(1);
         long negativeSum = 0;
         long positiveSum = 0;
 
