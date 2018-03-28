@@ -2,6 +2,7 @@ package rui.classifier.bayes;
 
 import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.fs.Path;
@@ -16,9 +17,10 @@ public class BayesDriver extends Configured implements Tool {
 
     @Override
     public int run(String[] args) throws Exception {
-        getConf().set(TextOutputFormat.SEPERATOR, ";");
+        Configuration conf1 = new Configuration();
+        conf1.set(TextOutputFormat.SEPERATOR, ";");
 
-        Job job = Job.getInstance(getConf(), this.getClass().getName());
+        Job job = Job.getInstance(conf1, this.getClass().getName());
         for (int i = 0; i < args.length; i += 1) {
             if ("-skip".equals(args[i])) {
                 job.getConfiguration().setBoolean("bayes.skip.patterns", true);
@@ -36,9 +38,13 @@ public class BayesDriver extends Configured implements Tool {
         job.setReducerClass(PreprocessReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-        job.waitForCompletion(true);
 
+        job.waitForCompletion(true);
+        
         // Build the model
+        Configuration conf2 = new Configuration();
+        conf2.set(TextOutputFormat.SEPERATOR, ";");
+        
         Job job2 = Job.getInstance(getConf(), this.getClass().getName());
         job2.getCounters().findCounter(BayesCounter.NegativeCounter).setValue(
             job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue()
@@ -65,6 +71,6 @@ public class BayesDriver extends Configured implements Tool {
         job2.setOutputKeyClass(Text.class);
         job2.setOutputValueClass(Text.class);
 
-        return job2.waitForCompletion(true) ? 1 : 0;
+        return job2.waitForCompletion(true) ? 0 : 1;
     }
 }
