@@ -9,7 +9,7 @@ import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.ling.CoreLabel;
 
 public class Util {
-    final static String IGNORE_PATTERN = " \t\n\r\f,.:;?![]()|";
+    final static String IGNORE_PATTERN = " \t\n\r\f,.:;?![]()|~";
 
     private static String removeIgnorePattern(String s) {
         StringBuilder sb = new StringBuilder();
@@ -33,8 +33,19 @@ public class Util {
         return res;
     }
 
-    public static Double calculateLikelihood(int wordCount, int labelWordCountTotal, int uniqueWords) {
+    public static String calculateLikelihood(int wordCount, long labelWordCountTotal, long uniqueWords) {
         // Laplace smoothing
-        return Math.log(1 + ((double)wordCount + 1) / ((double)labelWordCountTotal + (double)uniqueWords));
+        Double res = Math.log(1 + ((double)wordCount + 1) / ((double)labelWordCountTotal + (double)uniqueWords));
+        return String.format("%.6f", res);
+    }
+
+    public static String[] calculatePrior(long positiveCount, long negativeCount) {
+        String[] res = new String[2];
+        Double res1 = Math.log(1 + (double) positiveCount / ((double)positiveCount + (double)negativeCount));
+        Double res2 = Math.log(1 + (double) negativeCount / ((double)positiveCount + (double)negativeCount));
+
+        res[0] = String.format("%.6f", res1);
+        res[1] = String.format("%.6f", res2);
+        return res;
     }
 }

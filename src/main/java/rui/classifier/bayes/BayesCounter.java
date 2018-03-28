@@ -5,5 +5,5 @@ public enum BayesCounter {
     NegativeCounter,
     PositiveDocument,
     NegativeDocument,
-    UniqueTokens
+    UniqueTokenCounter
 }

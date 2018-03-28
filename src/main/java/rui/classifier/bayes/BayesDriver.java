@@ -8,12 +8,16 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.mapreduce.TaskCounter;
 
 public class BayesDriver extends Configured implements Tool {
     private static final Logger LOG = Logger.getLogger(BayesDriver.class.getName());
 
     @Override
     public int run(String[] args) throws Exception {
+        getConf().set(TextOutputFormat.SEPERATOR, ";");
+
         Job job = Job.getInstance(getConf(), this.getClass().getName());
         for (int i = 0; i < args.length; i += 1) {
             if ("-skip".equals(args[i])) {
@@ -27,13 +31,40 @@ public class BayesDriver extends Configured implements Tool {
         job.setJarByClass(this.getClass());
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        job.setMapperClass(BayesMapper.class);
-        job.setCombinerClass(BayesReducer.class);
-        job.setReducerClass(BayesReducer.class);
+        job.setMapperClass(PreprocessMapper.class);
+        job.setCombinerClass(PreprocessReducer.class);
+        job.setReducerClass(PreprocessReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
+        job.waitForCompletion(true);
 
-        int retCode = job.waitForCompletion(true) ? 1 : 0;
-        return retCode;
+        // Build the model
+        Job job2 = Job.getInstance(getConf(), this.getClass().getName());
+        job2.getCounters().findCounter(BayesCounter.NegativeCounter).setValue(
+            job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue()
+        );
+        job2.getCounters().findCounter(BayesCounter.PositiveCounter).setValue(
+            job.getCounters().findCounter(BayesCounter.PositiveCounter).getValue()
+        );
+        job2.getCounters().findCounter(BayesCounter.PositiveDocument).setValue(
+            job.getCounters().findCounter(BayesCounter.PositiveDocument).getValue()
+        );
+        job2.getCounters().findCounter(BayesCounter.NegativeDocument).setValue(
+            job.getCounters().findCounter(BayesCounter.NegativeDocument).getValue()
+        );
+        job2.getCounters().findCounter(BayesCounter.UniqueTokenCounter).setValue(
+            job.getCounters().findCounter(TaskCounter.REDUCE_OUTPUT_RECORDS).getValue()
+        );
+
+        job2.setJarByClass(this.getClass());
+        FileInputFormat.addInputPath(job2, new Path(args[1]));
+        FileOutputFormat.setOutputPath(job2, new Path(args[2]));
+        job2.setMapperClass(BayesMapper.class);
+        job2.setCombinerClass(BayesReducer.class);
+        job2.setReducerClass(BayesReducer.class);
+        job2.setOutputKeyClass(Text.class);
+        job2.setOutputValueClass(Text.class);
+
+        return job2.waitForCompletion(true) ? 1 : 0;
     }
 }

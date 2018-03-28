@@ -30,7 +30,11 @@ public class UtilTest {
     }
 
     @Test public void testLikeihoodCalculation() {
-        Double res = Util.calculateLikelihood(0, 405611, 45558);
-        assertEquals("0.000002", String.format("%.6f", res));
+        assertEquals("0.000002", Util.calculateLikelihood(0, 405611, 45558));
+    }
+
+    @Test public void testPriorCalculation() {
+        String[] expected = { "0.641339", "0.096199" };
+        assertArrayEquals(expected, Util.calculatePrior(405611, 45558));
     }
 }
