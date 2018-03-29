@@ -23,8 +23,6 @@ public class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static final Logger LOG = Logger.getLogger(PreprocessMapper.class.getName());
     private static final String LABEL_SEPRATOR = "###";
     private Set<String> patternsToSkip = new HashSet<String>();
-    private Text POSITIVE_COUNT = new Text("POSITIVE_COUNTS");
-    private Text NEGATIVE_COUNT = new Text("NEGATIVE_COUNTS");
 
     protected void setup(Context context) throws IOException, InterruptedException {
         Configuration config = context.getConfiguration();
@@ -75,13 +73,11 @@ public class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
             if (label.equals("Positive")) {
                 record.addProperty("positive", 1);
                 record.addProperty("negative", 0);
-                context.write(POSITIVE_COUNT, new Text(record.toString()));
                 context.getCounter(BayesCounter.PositiveCounter).increment(1);
             }
             else {
                 record.addProperty("positive", 0);
                 record.addProperty("negative", 1);
-                context.write(NEGATIVE_COUNT, new Text(record.toString()));
                 context.getCounter(BayesCounter.NegativeCounter).increment(1);
             }
 

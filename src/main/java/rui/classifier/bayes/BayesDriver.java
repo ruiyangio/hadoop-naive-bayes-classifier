@@ -1,5 +1,6 @@
 package rui.classifier.bayes;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.conf.Configuration;
@@ -20,7 +21,7 @@ public class BayesDriver extends Configured implements Tool {
         Configuration conf1 = new Configuration();
         conf1.set(TextOutputFormat.SEPERATOR, ";");
 
-        Job job = Job.getInstance(conf1, this.getClass().getName());
+        Job job = Job.getInstance(conf1, "Preprocessing job");
         for (int i = 0; i < args.length; i += 1) {
             if ("-skip".equals(args[i])) {
                 job.getConfiguration().setBoolean("bayes.skip.patterns", true);
@@ -39,7 +40,10 @@ public class BayesDriver extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.waitForCompletion(true);
+        if (!job.waitForCompletion(true)) {
+            LOG.log(Level.SEVERE, "Preprocessing failed");
+            return 1;
+        }
         
         // Build the model
         Configuration conf2 = new Configuration();
@@ -50,7 +54,7 @@ public class BayesDriver extends Configured implements Tool {
         conf2.setLong(BayesCounter.NegativeDocument.toString(), job.getCounters().findCounter(BayesCounter.NegativeDocument).getValue());
         conf2.setLong(BayesCounter.UniqueTokenCounter.toString(), job.getCounters().findCounter(TaskCounter.REDUCE_OUTPUT_RECORDS).getValue());
         
-        Job job2 = Job.getInstance(getConf(), this.getClass().getName());
+        Job job2 = Job.getInstance(conf2, "Model Job");
         job2.setJarByClass(this.getClass());
         FileInputFormat.addInputPath(job2, new Path(args[1]));
         FileOutputFormat.setOutputPath(job2, new Path(args[2]));

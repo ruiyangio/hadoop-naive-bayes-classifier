@@ -6,7 +6,7 @@ import rui.classifier.bayes.Util;
 
 public class UtilTest {
     @Test public void testNlpTokenizeMethod() {
-        String testStr = "my |recommendation : duck's in I don't like while you're waiting( one-hour Marry_Jane\n";
+        String testStr = "my :) |recommendation : duck's in I don't like while you're waiting( one-hour Marry_Jane\n";
         String[] expected = {
             "my",
             "recommendation",
