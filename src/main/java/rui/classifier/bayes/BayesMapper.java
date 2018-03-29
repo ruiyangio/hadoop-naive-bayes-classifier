@@ -18,11 +18,11 @@ public class BayesMapper extends Mapper<LongWritable, Text, Text, Text> {
     public void map(LongWritable offset, Text lineText, Context context) throws IOException, InterruptedException {
         String line = lineText.toString().trim();
         String[] parts = line.split(";");
-        long negativeCount = context.getCounter(BayesCounter.NegativeCounter).getValue();
-        long negativeDocuments = context.getCounter(BayesCounter.NegativeDocument).getValue();
-        long positiveCount = context.getCounter(BayesCounter.PositiveCounter).getValue();
-        long positiveDocuments = context.getCounter(BayesCounter.PositiveDocument).getValue();
-        long uniqueCount = context.getCounter(BayesCounter.UniqueTokenCounter).getValue();
+        long positiveCount = context.getConfiguration().getLong(BayesCounter.PositiveCounter.toString(), 0);
+        long negativeCount = context.getConfiguration().getLong(BayesCounter.NegativeCounter.toString(), 0);
+        long positiveDocuments = context.getConfiguration().getLong(BayesCounter.PositiveDocument.toString(), 0);
+        long negativeDocuments = context.getConfiguration().getLong(BayesCounter.NegativeDocument.toString(), 0);
+        long uniqueCount = context.getConfiguration().getLong(BayesCounter.UniqueTokenCounter.toString(), 0);
 
         String token = parts[0];
         String record = parts[1];

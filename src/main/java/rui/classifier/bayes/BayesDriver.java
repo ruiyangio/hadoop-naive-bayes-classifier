@@ -44,24 +44,13 @@ public class BayesDriver extends Configured implements Tool {
         // Build the model
         Configuration conf2 = new Configuration();
         conf2.set(TextOutputFormat.SEPERATOR, ";");
+        conf2.setLong(BayesCounter.PositiveCounter.toString(), job.getCounters().findCounter(BayesCounter.PositiveCounter).getValue());
+        conf2.setLong(BayesCounter.NegativeCounter.toString(), job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue());
+        conf2.setLong(BayesCounter.PositiveDocument.toString(), job.getCounters().findCounter(BayesCounter.PositiveDocument).getValue());
+        conf2.setLong(BayesCounter.NegativeDocument.toString(), job.getCounters().findCounter(BayesCounter.NegativeDocument).getValue());
+        conf2.setLong(BayesCounter.UniqueTokenCounter.toString(), job.getCounters().findCounter(TaskCounter.REDUCE_OUTPUT_RECORDS).getValue());
         
         Job job2 = Job.getInstance(getConf(), this.getClass().getName());
-        job2.getCounters().findCounter(BayesCounter.NegativeCounter).setValue(
-            job.getCounters().findCounter(BayesCounter.NegativeCounter).getValue()
-        );
-        job2.getCounters().findCounter(BayesCounter.PositiveCounter).setValue(
-            job.getCounters().findCounter(BayesCounter.PositiveCounter).getValue()
-        );
-        job2.getCounters().findCounter(BayesCounter.PositiveDocument).setValue(
-            job.getCounters().findCounter(BayesCounter.PositiveDocument).getValue()
-        );
-        job2.getCounters().findCounter(BayesCounter.NegativeDocument).setValue(
-            job.getCounters().findCounter(BayesCounter.NegativeDocument).getValue()
-        );
-        job2.getCounters().findCounter(BayesCounter.UniqueTokenCounter).setValue(
-            job.getCounters().findCounter(TaskCounter.REDUCE_OUTPUT_RECORDS).getValue()
-        );
-
         job2.setJarByClass(this.getClass());
         FileInputFormat.addInputPath(job2, new Path(args[1]));
         FileOutputFormat.setOutputPath(job2, new Path(args[2]));

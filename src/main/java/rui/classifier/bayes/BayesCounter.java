@@ -5,5 +5,10 @@ public enum BayesCounter {
     NegativeCounter,
     PositiveDocument,
     NegativeDocument,
-    UniqueTokenCounter
+    UniqueTokenCounter;
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "." + name();
+    }
 }
