@@ -83,7 +83,7 @@ public class Util {
         positiveScore += positivePrior;
         negativeScore += negativePrior;
 
-        return positiveScore >= negativeScore ? "Positive" : "Negative";
+        return positiveScore >= negativeScore ? "POS" : "NEG";
     }
 
     public static Double evaluateAccuracy(String validationSetFile, String modelFile) {
@@ -110,7 +110,7 @@ public class Util {
             for (String validationLine : validationContent) {
                 totalLines++;
                 validationLine = validationLine.trim().replaceAll("\\r|\\n", "");
-                String[] parts = validationLine.split("###");
+                String[] parts = validationLine.split("@@@@");
                 String sentence = parts[0].toLowerCase();
                 String label = parts[1];
 

@@ -21,7 +21,7 @@ import rui.classifier.bayes.BayesCounter;
 
 public class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static final Logger LOG = Logger.getLogger(PreprocessMapper.class.getName());
-    private static final String LABEL_SEPRATOR = "###";
+    private static final String LABEL_SEPRATOR = "@@@@";
     private Set<String> patternsToSkip = new HashSet<String>();
 
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -55,7 +55,7 @@ public class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
         String sentence = parts[0].toLowerCase();
         String label = parts[1];
 
-        if (label.equals("Positive")) {
+        if (label.equals("POS")) {
             context.getCounter(BayesCounter.PositiveDocument).increment(1);
         }
         else {
@@ -70,7 +70,7 @@ public class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
 
             JsonObject record = new JsonObject();
             record.addProperty("token", token);
-            if (label.equals("Positive")) {
+            if (label.equals("POS")) {
                 record.addProperty("positive", 1);
                 record.addProperty("negative", 0);
                 context.getCounter(BayesCounter.PositiveCounter).increment(1);
