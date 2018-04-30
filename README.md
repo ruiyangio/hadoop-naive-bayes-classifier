@@ -12,7 +12,7 @@ The job generates a vocabulary with each word's log likeihood for further use.
 Example:
 ```javascript
 {
-	"token":"adept",
+    "token":"adept",
     "positive":"-11.910391",
     "negative":"-12.852409",
     "positivePrior":"-0.693147",
