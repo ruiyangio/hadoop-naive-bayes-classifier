@@ -24,7 +24,7 @@ public class BayesDriver extends Configured implements Tool {
         Job job = Job.getInstance(conf1, "Preprocessing job");
         for (int i = 0; i < args.length; i += 1) {
             if ("-skip".equals(args[i])) {
-                job.getConfiguration().setBoolean("bayes.skip.patterns", true);
+                job.getConfiguration().setBoolean("bayes.skip.patterns", false);
                 i += 1;
                 job.addCacheFile(new Path(args[i]).toUri());
                 LOG.info("Added file to the distributed cache: " + args[i]);

@@ -9,19 +9,21 @@ public class UtilTest {
         String testStr = "my :) |recommendation : duck's in I don't like while you're waiting( one-hour Marry_Jane\n";
         String[] expected = {
             "my",
+            ")",
             "recommendation",
             "duck",
-            "'s",
+            "s",
             "in",
             "I",
-            "do",
-            "n't",
+            "don",
+            "t",
             "like",
             "while",
             "you",
-            "'re",
-            "waiting",
-            "one-hour",
+            "re",
+            "waiting(",
+            "one",
+            "hour",
             "Marry_Jane"
         };
 
@@ -30,11 +32,11 @@ public class UtilTest {
     }
 
     @Test public void testLikeihoodCalculation() {
-        assertEquals("0.000002", Util.calculateLikelihood(0, 405611, 45558));
+        assertEquals("-13.019597", Util.calculateLikelihood(0, 405611, 45558));
     }
 
     @Test public void testPriorCalculation() {
-        String[] expected = { "0.641339", "0.096199" };
+        String[] expected = { "-0.106447", "-2.292856" };
         assertArrayEquals(expected, Util.calculatePrior(405611, 45558));
     }
 }
